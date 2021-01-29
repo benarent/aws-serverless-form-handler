@@ -8,7 +8,7 @@ Parameters:
     Type: String
     Description: (Required) A validated SES email address for receiving new submissions.
     MaxLength: 70
-    Default: validated@email.com
+    Default: ben@goteleport.com
     MinLength: 4
     ConstraintDescription: Required. Must be a SES verified email address.
 
@@ -18,10 +18,12 @@ Globals:
     Timeout: 10
   Api:
     EndpointConfiguration: EDGE
-    Cors: 
+    BinaryMediaTypes:
+      - multipart/form-data
+    Cors:
       AllowMethods: "'OPTIONS,POST'"
       AllowHeaders: "'Content-Type'"
-      AllowOrigin: "'*'"    
+      AllowOrigin: "'*'"
 
 Resources:
   FormDataTable:
@@ -54,7 +56,7 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: '/submitForm'
+            Path: '/usage'
             Method: post
 
 Outputs:

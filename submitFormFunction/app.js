@@ -24,6 +24,7 @@
 
 const { saveFormData } = require('./dynamodb')
 const { sendEmail } = require('./ses')
+const parser = require('lambda-multipart-parser');
 
 const headers = {
   'Content-Type': 'application/json',
@@ -35,25 +36,31 @@ const headers = {
 // Main Lambda entry point
 exports.handler = async (event) => {
 
+    const result = await parser.parse(event);
+    console.log(result.OS);
+    console.log(result.version);
+    console.log(result.email)
+    console.log(`what's the result:` + result)
+
     console.log(`Started with: ${event.body}`)
-    const formData = JSON.parse(event.body)
-    
+    const formData = (result)
+
     try {
       // Send email and save to DynamoDB in parallel using Promise.all
       await Promise.all([sendEmail(formData), saveFormData(formData)])
-      
+
       return {
           statusCode: 200,
-          body: 'OK!',
-          headers        
+          body: "Thank you for submitting Teleport usage data \n",
+          headers
       }
     } catch(err) {
-      console.error('handler error: ', err)  
+      console.error('handler error: ', err)
 
       return {
           statusCode: 500,
-          body: 'Error',
-          headers    
+          body: 'Error \n',
+          headers
       }
     }
 }

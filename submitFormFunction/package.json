@@ -10,6 +10,8 @@
   "author": "James Beswick, Amazon Web Services",
   "license": "MIT",
   "dependencies": {
-    "aws-sdk": "^2.478.0"
+    "aws-sdk": "^2.478.0",
+    "lambda-multipart-parser": "^1.0.0",
+    "parse-multipart": "^1.0.4"
   }
 }

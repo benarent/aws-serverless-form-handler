@@ -23,6 +23,7 @@
  */
 
 const { saveFormData } = require('./dynamodb')
+const { saveFormDataPG } = require('./postgres')
 const { sendEmail } = require('./ses')
 const parser = require('lambda-multipart-parser');
 
@@ -47,7 +48,7 @@ exports.handler = async (event) => {
 
     try {
       // Send email and save to DynamoDB in parallel using Promise.all
-      await Promise.all([sendEmail(formData), saveFormData(formData)])
+      await Promise.all([sendEmail(formData), saveFormData(formData),  saveFormDataPG(formData)])
 
       return {
           statusCode: 200,

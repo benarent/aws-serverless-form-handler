@@ -39,16 +39,22 @@ Important: this application uses various AWS services and there are costs associ
 ## How it works
 
 * Deploy this serverless application and take a note of the API endpoint.
-* Create a form in a webpage and use the Javascript handling functon as shown in [this Gist](https://gist.github.com/jbesw/b75a2409521e2ff632dce7c8e07d6d2a) for an example. Use the API endpoint in the AJAX request to process the form data.
 
 ## Deploy
-TODO setup binary accepting header
 
-`sam deploy --guided`
+
+`sam deploy`
 
 ## Test .
 
 `curl -X POST https://9sjnq1g1j9.execute-api.us-west-2.amazonaws.com/Prod/usage -F  OS=darwin -F version=5.1 -F email=alice@example.com `
+
+
+## TODO
+
+- [ ] Create permission for Lambda to execute RDS Data API
+- [ ] SAM to create the serverless database and create the correct table
+
 
 ==============================================
 

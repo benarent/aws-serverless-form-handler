@@ -1,16 +1,18 @@
+
 /*
-  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this
-  software and associated documentation files (the "Software"), to deal in the Software
-  without restriction, including without limitation the rights to use, copy, modify,
-  merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
-  permit persons to whom the Software is furnished to do so.
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-  INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-  PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-  OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Copyright 2021 Gravitational, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Modified version of https://github.com/jbesw/aws-serverless-form-handler
 */
 
 'use strict'
@@ -22,7 +24,6 @@
  *
  */
 
-const { saveFormData } = require('./dynamodb')
 const { saveFormDataPG } = require('./postgres')
 const { sendEmail } = require('./ses')
 const parser = require('lambda-multipart-parser');
@@ -36,23 +37,27 @@ const headers = {
 
 // Main Lambda entry point
 exports.handler = async (event) => {
+    if (event.body === null) {
+      return{
+         statusCode: 500,
+         body: 'Error: Missing Survey Data\n',
+         headers}
+    }else{
 
-    const result = await parser.parse(event);
-    console.log(result.OS);
-    console.log(result.version);
-    console.log(result.email)
+    const result = await parser.parse(event)
+
     console.log(`what's the result:` + result)
 
     console.log(`Started with: ${event.body}`)
     const formData = (result)
 
     try {
-      // Send email and save to DynamoDB in parallel using Promise.all
-      await Promise.all([sendEmail(formData), saveFormData(formData),  saveFormDataPG(formData)])
+      // Send email and save to Postgres in parallel using Promise.all
+      await Promise.all([sendEmail(formData), saveFormDataPG(formData)])
 
       return {
           statusCode: 200,
-          body: "Thank you for submitting Teleport usage data \n",
+          body: "Thank you for submitting Teleport usage data.\nWe will send you a meaningful newsletter and reach out to send some swag.\n",
           headers
       }
     } catch(err) {
@@ -64,4 +69,5 @@ exports.handler = async (event) => {
           headers
       }
     }
+  }
 }

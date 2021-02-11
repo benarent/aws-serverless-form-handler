@@ -1,4 +1,4 @@
-# Serverless Form Handler
+# Teleport serverless adoption metrics.
 
 The Serverless Form Handler accepts a form submission from a webpage, saving the data to a DynamoDB table and sending an email via SES.
 
@@ -45,7 +45,7 @@ Important: this application uses various AWS services and there are costs associ
 
 `sam deploy`
 
-## Test .
+## Test
 
 `curl -X POST https://9sjnq1g1j9.execute-api.us-west-2.amazonaws.com/Prod/usage -F  OS=darwin -F version=5.1 -F email=alice@example.com `
 
@@ -56,8 +56,21 @@ Important: this application uses various AWS services and there are costs associ
 - [ ] SAM to create the serverless database and create the correct table
 
 
+### Postgres Table
+
+Currently AWS SAM doesn't have a best pratice for creating a table.
+
+```
+CREATE TABLE survey_data (
+	survey_id serial PRIMARY KEY,
+	email VARCHAR ( 255 ) NOT NULL,
+	os VARCHAR ( 20 ) NOT NULL,
+version VARCHAR ( 20 ) NOT NULL,
+	submitted TIMESTAMP NOT NULL
+)
+```
+
 ==============================================
 
-Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
+This project was based on https://github.com/jbesw/aws-serverless-form-handler
 SPDX-License-Identifier: MIT-0

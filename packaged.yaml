@@ -1,9 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: 'Serverless Form Handler - accepts a form submission from a webpage,
-  saving the data to a DynamoDB table and sending an email via SES.
-
-  '
+Description: 'Serverless CLI Form Handler - accepts a form submission from a
+  saving the data to a Postgres table and sending an email via SES. '
 Parameters:
   ValidatedEmail:
     Type: String
@@ -12,6 +10,22 @@ Parameters:
     Default: ben@goteleport.com
     MinLength: 4
     ConstraintDescription: Required. Must be a SES verified email address.
+  DBUsername:
+      NoEcho: 'true'
+      Description: Username for Postsql database access
+      Type: String
+      MinLength: '1'
+      MaxLength: '16'
+      AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+      ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  DBPassword:
+    NoEcho: 'true'
+    Description: Password Postsql database access
+    Type: String
+    MinLength: '8'
+    MaxLength: '41'
+    AllowedPattern: '[a-zA-Z0-9]*'
+    ConstraintDescription: must contain only alphanumeric characters.
 Globals:
   Function:
     Timeout: 10
@@ -21,6 +35,8 @@ Globals:
       AllowMethods: '''OPTIONS,POST'''
       AllowHeaders: '''Content-Type'''
       AllowOrigin: '''*'''
+    BinaryMediaTypes:
+      - 'multipart/form-data'
 Resources:
   FormDataTable:
     Type: AWS::DynamoDB::Table
@@ -32,6 +48,23 @@ Resources:
       - AttributeName: formId
         KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+  FormDataPG:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      MasterUsername:
+        Ref: DBUsername
+      MasterUserPassword:
+        Ref: DBPassword
+      DBClusterIdentifier: aurora-postgresql-cluster
+      DatabaseName: teleport-adoption-cli
+      Engine: aurora-postgresql
+      EngineMode: serverless
+      EnableHttpEndpoint: true
+      ScalingConfiguration:
+        AutoPause: true
+        MinCapacity: 4
+        MaxCapacity: 10
+        SecondsUntilAutoPause: 1000
   SubmitFormFunction:
     Type: AWS::Serverless::Function
     Properties:

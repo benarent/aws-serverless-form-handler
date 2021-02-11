@@ -45,10 +45,6 @@ exports.handler = async (event) => {
     }else{
 
     const result = await parser.parse(event)
-
-    console.log(`what's the result:` + result)
-
-    console.log(`Started with: ${event.body}`)
     const formData = (result)
 
     try {
@@ -56,6 +52,7 @@ exports.handler = async (event) => {
       await Promise.all([sendEmail(formData), saveFormDataPG(formData)])
 
       return {
+          // Returns error message back to user.
           statusCode: 200,
           body: "Thank you for submitting Teleport usage data.\nWe will send you a meaningful newsletter and reach out to send some swag.\n",
           headers

@@ -78,6 +78,8 @@ Resources:
             Ref: ValidatedEmail
           FormDataTable:
             Ref: FormDataTable
+          FormDataTablePG:
+            Ref: FormDataTablePG
       Policies:
       - DynamoDBCrudPolicy:
           TableName:
@@ -89,7 +91,7 @@ Resources:
         HttpPost:
           Type: Api
           Properties:
-            Path: /submitForm
+            Path: /usage
             Method: post
 Outputs:
   SubmitFormFunction:

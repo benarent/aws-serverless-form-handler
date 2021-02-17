@@ -18,13 +18,12 @@ Helpful Intro - https://www.jeremydaly.com/\aurora-serverless-data-api-a-first-l
 
 const AWS = require('aws-sdk')
 const RDS = new AWS.RDSDataService()
-const time = new Date().toISOString();
-
+const time = new Date(Date.now()).toISOString()
 
 const saveFormDataPG = async (formData) => {
 
     var sqlStatement = "INSERT INTO survey_data (email, os, version, submitted)\
-    VALUES('"+formData.email+"','"+formData.OS+"','"+formData.version+"', '"+time+"')"
+    VALUES(:email,:os,:version,'"+time+"')"
 
     // The Lambda environment variables for the Aurora Cluster Arn, Database Name, and the AWS Secrets Arn hosting the master credentials of the serverless db
     var DBSecretsStoreArn = process.env.DBSecretsStoreArn;
@@ -52,6 +51,14 @@ const saveFormDataPG = async (formData) => {
           name: 'version',
           value: {
             "stringValue": formData.version
+          }
+        },
+        {
+          name: 'submitted',
+          value: {
+            // YYY-MM-DD HH:MM:SS[.FFF]
+            //YYYY-MM-DD HH:MM:SS
+            "stringValue": "2011-05-27 22:48:40.540"
           }
         }
       ],
